@@ -651,6 +651,17 @@ namespace VM.Net.VirtualMachine
                         myInstructionPointer += 4;
                         break;
 
+                    case 0x2A:
+                        if (myCache.RegisterX + myCache.RegisterY > 0xFFFF)
+                            myProcessorFlags |= (byte)ProcessorFlags.Overflow;
+                        else
+                            myProcessorFlags &= 0xFE;
+
+                        unchecked { myCache.RegisterX += myCache.RegisterY; }
+
+                        myInstructionPointer += 1;
+                        break;
+
                     case 0x2B: // ADDX #val
                         compValueWord = (ushort)(((myMemory[InstructionPointer + 2] << 8) + myMemory[InstructionPointer + 1]));
 
