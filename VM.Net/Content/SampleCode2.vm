@@ -1,0 +1,27 @@
+Start: 
+ VCL 
+ LDA #65 
+ LDX #0xA000 
+ STA ,X 
+ LDA #66 
+ LDX #0xA002 
+ STA ,X 
+ LDA #67 
+ LDX #0xA004 
+ STA ,X 
+ LDB #65
+ CMPB #70
+ JLT #LESS
+ JGT #MORE 
+LESS:
+ LDA #68
+ LDX #0xA006 
+ STA ,X 
+ JMP #EndSpot
+MORE:
+ LDA #69
+ LDX #0xA006 
+ STA ,X 
+ JMP #EndSpot
+EndSpot: 
+ END Start 

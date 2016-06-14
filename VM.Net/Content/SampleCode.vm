@@ -1,0 +1,11 @@
+﻿START:
+ LDA #65
+ LDX #0xA000
+ STA ,x
+ LDA #66
+ LDX #0xA002
+ STA ,x
+ LDA #67
+ LDX #0xA004
+ STA ,x
+ END START 

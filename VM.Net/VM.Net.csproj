@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C48E32E6-0028-471A-8683-94EA01C7C29E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VM.Net</RootNamespace>
+    <AssemblyName>VM.Net</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Compiler\Assembler.cs" />
+    <Compile Include="Common\CompilerSettings.cs" />
+    <Compile Include="Compiler\Mnuemonics\AdcByteRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\AddWordRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\ADDXY.cs" />
+    <Compile Include="Compiler\Mnuemonics\ADDAB.cs" />
+    <Compile Include="Compiler\Mnuemonics\AddByteRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\DecByteRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\DecWordRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\IncWordRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\IncByteRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\JLT.cs" />
+    <Compile Include="Compiler\Mnuemonics\JGT.cs" />
+    <Compile Include="Compiler\Mnuemonics\JNE.cs" />
+    <Compile Include="Compiler\Mnuemonics\JEQ.cs" />
+    <Compile Include="Compiler\Mnuemonics\JMP.cs" />
+    <Compile Include="Compiler\Mnuemonics\CMPD.cs" />
+    <Compile Include="Compiler\Mnuemonics\CMPY.cs" />
+    <Compile Include="Compiler\Mnuemonics\CMPX.cs" />
+    <Compile Include="Compiler\Mnuemonics\CMPB.cs" />
+    <Compile Include="Compiler\Mnuemonics\CMPA.cs" />
+    <Compile Include="Compiler\Mnuemonics\JumpMneimonic.cs" />
+    <Compile Include="Compiler\Mnuemonics\LDB.cs" />
+    <Compile Include="Compiler\Mnuemonics\LDY.cs" />
+    <Compile Include="Compiler\Mnuemonics\LDX.cs" />
+    <Compile Include="Compiler\Mnuemonics\LDA.cs" />
+    <Compile Include="Compiler\Mneumonic.cs" />
+    <Compile Include="Compiler\Mnuemonics\RorByteRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\RolByteRegisters.cs" />
+    <Compile Include="Compiler\Mnuemonics\LOD.cs" />
+    <Compile Include="Compiler\Mnuemonics\STO.cs" />
+    <Compile Include="Compiler\Mnuemonics\STB.cs" />
+    <Compile Include="Compiler\Mnuemonics\VCL.cs" />
+    <Compile Include="Compiler\Mnuemonics\NOT.cs" />
+    <Compile Include="Compiler\Mnuemonics\VCP.cs" />
+    <Compile Include="Compiler\Mnuemonics\STA.cs" />
+    <Compile Include="Compiler\Mnuemonics\WordCompare.cs" />
+    <Compile Include="Compiler\SourceCrawler.cs" />
+    <Compile Include="Common\RegisterAddress.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VirtualMachine\Enums.cs" />
+    <Compile Include="VirtualMachine\Memory.cs" />
+    <Compile Include="VirtualMachine\Processor.cs" />
+    <Compile Include="VirtualMachine\ProcessorCache.cs" />
+    <Compile Include="VirtualMachine\VirtualScreen.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VirtualMachine\VirtualScreen.Designer.cs">
+      <DependentUpon>VirtualScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VirtualMachineHost.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VirtualMachineHost.Designer.cs">
+      <DependentUpon>VirtualMachineHost.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="bin\Debug\Content\SampleCode.vbc" />
+    <None Include="bin\Debug\Content\SampleCode2.vbc" />
+    <None Include="bin\Debug\Content\SampleCode3.vbc" />
+    <None Include="Content\SampleCode.vm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\SampleCode2.vm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\SampleCode3.vm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="VirtualMachine\VirtualScreen.resx">
+      <DependentUpon>VirtualScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VirtualMachineHost.resx">
+      <DependentUpon>VirtualMachineHost.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="VirtualMachine\Mneumonics\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

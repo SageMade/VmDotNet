@@ -1,0 +1,20 @@
+Start: 
+ VCL 
+ LDX #0x0000 
+ LDY #8 
+ LDA #48 
+ LDB #0x81 
+Loop1: 
+ ROLB 
+ ADCA 
+ VCP ,X 
+ INCX 
+ VCP ,X 
+ INCX 
+ VCP ,X 
+ INCX 
+ LDA #48 
+ DECY 
+ CMPY #0x00 
+ JNE #Loop1 
+ END Start 
