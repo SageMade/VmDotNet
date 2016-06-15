@@ -1,11 +1,39 @@
 ﻿START:
- LDA #65
- LDX #0xA000
- STA ,x
- LDA #66
- LDX #0xA002
- STA ,x
- LDA #67
- LDX #0xA004
- STA ,x
+ JMP @MAIN_PROG 
+ STM #10 #0xA000
+CLEAR_KB: ; Clear KB input
+ PUSH ,BP 
+ MOV ,BP ,SP 
+ PASS #0x00000001 #0x02
+ MOV ,SP ,BP
+ POP ,BP
+ POP ,IP
+CLEAR_SCR: ; Screen Clear Command 
+ PUSH ,BP 
+ MOV ,BP ,SP 
+ PASS #0x03000000 #0x01
+ PASS #0x00000000 #0x01
+ PASS #0x01000000 #0x01
+ MOV ,SP ,BP
+ POP ,BP
+ POP ,IP
+MAIN_PROG:
+ PUSH _ret_addr_
+ JMP @CLEAR_KB
+ PUSH _ret_addr_
+ JMP @CLEAR_SCR
+ ; Passing colors
+ PASS #0x01000000 #0x01
+ PASS #0xFFFF0000 #0x01
+ PASS #0          #0x01
+ PASS #0xFFFFFF00 #0x01
+ PASS #10         #0x01
+Poll_Keyboard:
+ POLL #0x02 ,IDX
+ AND ,IDX #0x01FFFFFF
+ CMP ,IDX #0x00 
+ JEQ @Poll_Keyboard 
+ PASS #0xFFFF0000 #0x01 
+ PASS #20         #0x01 
+ STM #10 #0xA000 
  END START 

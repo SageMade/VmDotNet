@@ -8,7 +8,11 @@ namespace VM.Net.Common
 {
     public static class CompilerSettings
     {
+        public static readonly int WORD_LENGTH = 4;
+        public static char LabelDelimiter = '@';
         public static char LabelEndDelimiter = ':';
+        public static char ConstantDelimiter = '_';
+        public static char CommentDelimiter = ';';
         public static char LiteralDelimiter = '#';
         public static char RegisterDelimiter = ',';
         public static char NewlineChar = '\n';

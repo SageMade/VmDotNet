@@ -48,6 +48,8 @@
             this.lblRegisters = new System.Windows.Forms.Label();
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.myVirtualScreen = new VM.Net.VirtualMachine.VirtualScreen();
+            this.mnuTools = new System.Windows.Forms.ToolStripMenuItem();
+            this.optRamDump = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.pnlRegisters.SuspendLayout();
             this.SuspendLayout();
@@ -56,7 +58,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.mnuSettings});
+            this.mnuSettings,
+            this.mnuTools});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(641, 24);
@@ -225,6 +228,21 @@
             this.myVirtualScreen.Size = new System.Drawing.Size(641, 331);
             this.myVirtualScreen.TabIndex = 0;
             // 
+            // mnuTools
+            // 
+            this.mnuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optRamDump});
+            this.mnuTools.Name = "mnuTools";
+            this.mnuTools.Size = new System.Drawing.Size(47, 20);
+            this.mnuTools.Text = "&Tools";
+            // 
+            // optRamDump
+            // 
+            this.optRamDump.Name = "optRamDump";
+            this.optRamDump.Size = new System.Drawing.Size(152, 22);
+            this.optRamDump.Text = "&RAM Dump";
+            this.optRamDump.Click += new System.EventHandler(this.optRamDump_Click);
+            // 
             // VirtualMachineHost
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -266,5 +284,7 @@
         private System.Windows.Forms.ToolStripMenuItem opt100MHz;
         private System.Windows.Forms.ToolStripMenuItem opt1GHz;
         private System.Windows.Forms.ToolStripMenuItem optPaused;
+        private System.Windows.Forms.ToolStripMenuItem mnuTools;
+        private System.Windows.Forms.ToolStripMenuItem optRamDump;
     }
 }

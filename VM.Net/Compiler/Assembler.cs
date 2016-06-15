@@ -13,7 +13,7 @@ namespace VM.Net.Compiler
     {
         private Hashtable myLabelLookup;
         private bool isEnd;
-        private ushort myExecutionAddress;
+        private uint myExecutionAddress;
 
         private SourceCrawler mySourceCrawler;
 
@@ -37,7 +37,7 @@ namespace VM.Net.Compiler
             output.Write(CompilerSettings.MagicCharacters);
 
             output.Write(mySourceCrawler.AssemblyLength);
-            output.Write((ushort)0); // Leave space for execution address
+            output.Write((uint)0); // Leave space for execution address
 
             long start = output.BaseStream.Position;
 
@@ -45,7 +45,7 @@ namespace VM.Net.Compiler
 
             long end = output.BaseStream.Position;
 
-            ushort progLength = (ushort)(end - start);
+            uint progLength = (uint)(end - start);
 
             output.Seek(3, SeekOrigin.Begin); // Seek to execution address
             output.Write(progLength); // write execution address
@@ -78,7 +78,10 @@ namespace VM.Net.Compiler
                 return;
             }
             mySourceCrawler.EatWhitespace();
-            ReadMneumonic(output, isLabelScan);
+            if (mySourceCrawler.Peek() != CompilerSettings.CommentDelimiter)
+                ReadMneumonic(output, isLabelScan);
+            else
+                mySourceCrawler.ReadToLineEnd();
         }
 
         private void ReadMneumonic(BinaryWriter output, bool isLabelScan)
@@ -98,7 +101,7 @@ namespace VM.Net.Compiler
                 isEnd = true;
                 DoEnd(output, isLabelScan);
                 mySourceCrawler.EatWhitespace();
-                myExecutionAddress = (ushort)myLabelLookup[mySourceCrawler.GetLabelName()];
+                myExecutionAddress = (uint)myLabelLookup[mySourceCrawler.GetLabelName()];
                 return;
             }
             else
@@ -116,7 +119,7 @@ namespace VM.Net.Compiler
 
             if (!isLabelScan)
             {
-                output.Write((byte)0x04);
+                output.Write((byte)0x01);
             }
         }
     }

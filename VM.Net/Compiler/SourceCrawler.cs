@@ -13,6 +13,8 @@ namespace VM.Net.Compiler
         private Hashtable myLabelLookup;
         private string mySource;
 
+        private static readonly string[] REGISTER_NAMES = Enum.GetNames(typeof(RegisterAddress));
+
         public string Source
         {
             get { return mySource; }
@@ -23,11 +25,20 @@ namespace VM.Net.Compiler
         }
 
         public int CurrentNdx;
-        public ushort AssemblyLength;
+        public uint AssemblyLength;
+
+        public char Current
+        {
+            get { return mySource[CurrentNdx]; }
+        }
+        public char Next
+        {
+            get { return mySource[CurrentNdx + 1]; }
+        }
 
         public SourceCrawler(string source, ushort assemblyLength = 0)
         {
-            mySource = source;
+            mySource = source.Replace("\r", "");
             CurrentNdx = 0;
             AssemblyLength = assemblyLength;
         }
@@ -97,9 +108,19 @@ namespace VM.Net.Compiler
             return result;
         }
 
-        public ushort ReadWordValue()
+        public uint ReadLabelLocation()
         {
-            ushort result = 0;
+            string label = GetLabelName();
+
+            if (myLabelLookup.ContainsKey(label))
+                return (uint)(myLabelLookup[label]);
+            else
+                return 0;
+        }
+
+        public uint ReadWordValue()
+        {
+            uint result = 0;
             LiteralType literalType = LiteralType.Decimal;
             string sval = "";
 
@@ -138,13 +159,13 @@ namespace VM.Net.Compiler
                 switch (literalType)
                 {
                     case LiteralType.Binary:
-                        result = Convert.ToUInt16(sval, 1);
+                        result = Convert.ToUInt32(sval, 1);
                         break;
                     case LiteralType.Hexidecimal:
-                        result = Convert.ToUInt16(sval, 16);
+                        result = Convert.ToUInt32(sval, 16);
                         break;
                     case LiteralType.Decimal:
-                        result = ushort.Parse(sval);
+                        result = uint.Parse(sval);
                         break;
                     default:
                         result = 0;
@@ -155,7 +176,7 @@ namespace VM.Net.Compiler
             {
                 literalType = LiteralType.Label;
                 string label = GetLabelName();
-                result = (ushort)(myLabelLookup[label]);
+                result = (uint)(myLabelLookup[label]);
             }
 
             return result;
@@ -165,18 +186,14 @@ namespace VM.Net.Compiler
         {
             RegisterAddress result = RegisterAddress.Unknown;
 
-            if (char.ToUpper(Peek()) == 'X')
-                result = RegisterAddress.X;
-            if (char.ToUpper(Peek()) == 'Y')
-                result = RegisterAddress.Y;
-            if (char.ToUpper(Peek()) == 'D')
-                result = RegisterAddress.D;
-            if (char.ToUpper(Peek()) == 'A')
-                result = RegisterAddress.A;
-            if (char.ToUpper(Peek()) == 'B')
-                result = RegisterAddress.B;
+            string str = "";
 
-            CurrentNdx++;
+            while (!char.IsWhiteSpace(Peek()))
+                str += Get();
+
+            if (REGISTER_NAMES.Contains(str))
+                result = (RegisterAddress)Enum.Parse(typeof(RegisterAddress), str);
+            
             return result;
         }
 
@@ -190,7 +207,7 @@ namespace VM.Net.Compiler
         {
             string result = "";
 
-            while(char.IsLetterOrDigit(Peek()))
+            while(!char.IsWhiteSpace(Peek()))
             {
                 if (Peek() == CompilerSettings.LabelEndDelimiter)
                 {

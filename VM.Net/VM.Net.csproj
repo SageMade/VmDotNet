@@ -47,49 +47,49 @@
   <ItemGroup>
     <Compile Include="Compiler\Assembler.cs" />
     <Compile Include="Common\CompilerSettings.cs" />
-    <Compile Include="Compiler\Mnuemonics\AdcByteRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\AddWordRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\ADDXY.cs" />
-    <Compile Include="Compiler\Mnuemonics\ADDAB.cs" />
-    <Compile Include="Compiler\Mnuemonics\AddByteRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\DecByteRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\DecWordRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\IncWordRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\IncByteRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\JLT.cs" />
-    <Compile Include="Compiler\Mnuemonics\JGT.cs" />
-    <Compile Include="Compiler\Mnuemonics\JNE.cs" />
-    <Compile Include="Compiler\Mnuemonics\JEQ.cs" />
-    <Compile Include="Compiler\Mnuemonics\JMP.cs" />
-    <Compile Include="Compiler\Mnuemonics\CMPD.cs" />
-    <Compile Include="Compiler\Mnuemonics\CMPY.cs" />
-    <Compile Include="Compiler\Mnuemonics\CMPX.cs" />
-    <Compile Include="Compiler\Mnuemonics\CMPB.cs" />
-    <Compile Include="Compiler\Mnuemonics\CMPA.cs" />
-    <Compile Include="Compiler\Mnuemonics\JumpMneimonic.cs" />
-    <Compile Include="Compiler\Mnuemonics\LDB.cs" />
-    <Compile Include="Compiler\Mnuemonics\LDY.cs" />
-    <Compile Include="Compiler\Mnuemonics\LDX.cs" />
-    <Compile Include="Compiler\Mnuemonics\LDA.cs" />
+    <Compile Include="Compiler\Mnemonics2\RET.cs" />
+    <Compile Include="Compiler\Mnemonics2\POP.cs" />
+    <Compile Include="Compiler\Mnemonics2\PUSH.cs" />
+    <Compile Include="Compiler\Mnemonics2\PASS.cs" />
+    <Compile Include="Compiler\Mnemonics2\DIV.cs" />
+    <Compile Include="Compiler\Mnemonics2\MUL.cs" />
+    <Compile Include="Compiler\Mnemonics2\DIVS.cs" />
+    <Compile Include="Compiler\Mnemonics2\MULS.cs" />
+    <Compile Include="Compiler\Mnemonics2\POLL.cs" />
+    <Compile Include="Compiler\Mnemonics2\SUBS.cs" />
+    <Compile Include="Compiler\Mnemonics2\SUB.cs" />
+    <Compile Include="Compiler\Mnemonics2\ADDS.cs" />
+    <Compile Include="Compiler\Mnemonics2\ADD.cs" />
+    <Compile Include="Compiler\Mnemonics2\MOV.cs" />
+    <Compile Include="Compiler\Mnemonics2\XOR.cs" />
+    <Compile Include="Compiler\Mnemonics2\OR.cs" />
+    <Compile Include="Compiler\Mnemonics2\DEC.cs" />
+    <Compile Include="Compiler\Mnemonics2\AND.cs" />
+    <Compile Include="Compiler\Mnemonics2\ROR.cs" />
+    <Compile Include="Compiler\Mnemonics2\ROL.cs" />
+    <Compile Include="Compiler\Mnemonics2\INC.cs" />
+    <Compile Include="Compiler\Mnemonics2\JLT.cs" />
+    <Compile Include="Compiler\Mnemonics2\JGT.cs" />
+    <Compile Include="Compiler\Mnemonics2\JNE.cs" />
+    <Compile Include="Compiler\Mnemonics2\JEQ.cs" />
+    <Compile Include="Compiler\Mnemonics2\JMP.cs" />
+    <Compile Include="Compiler\Mnemonics2\STM.cs" />
+    <Compile Include="Compiler\Mnemonics2\CMP.cs" />
+    <Compile Include="Compiler\Mnemonics2\ADDC.cs" />
+    <Compile Include="Compiler\Mnemonics2\NOT.cs" />
+    <Compile Include="Compiler\Mnemonics2\STOR.cs" />
+    <Compile Include="Compiler\Mnemonics2\LOD.cs" />
     <Compile Include="Compiler\Mneumonic.cs" />
-    <Compile Include="Compiler\Mnuemonics\RorByteRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\RolByteRegisters.cs" />
-    <Compile Include="Compiler\Mnuemonics\LOD.cs" />
-    <Compile Include="Compiler\Mnuemonics\STO.cs" />
-    <Compile Include="Compiler\Mnuemonics\STB.cs" />
-    <Compile Include="Compiler\Mnuemonics\VCL.cs" />
-    <Compile Include="Compiler\Mnuemonics\NOT.cs" />
-    <Compile Include="Compiler\Mnuemonics\VCP.cs" />
-    <Compile Include="Compiler\Mnuemonics\STA.cs" />
-    <Compile Include="Compiler\Mnuemonics\WordCompare.cs" />
     <Compile Include="Compiler\SourceCrawler.cs" />
     <Compile Include="Common\RegisterAddress.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VirtualMachine\Enums.cs" />
+    <Compile Include="VirtualMachine\IPeripheral.cs" />
     <Compile Include="VirtualMachine\Memory.cs" />
     <Compile Include="VirtualMachine\Processor.cs" />
     <Compile Include="VirtualMachine\ProcessorCache.cs" />
+    <Compile Include="VirtualMachine\VirtualKeyboard.cs" />
     <Compile Include="VirtualMachine\VirtualScreen.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -111,12 +111,6 @@
     <None Include="Content\SampleCode.vm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\SampleCode2.vm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\SampleCode3.vm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="VirtualMachine\VirtualScreen.resx">
@@ -126,9 +120,7 @@
       <DependentUpon>VirtualMachineHost.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="VirtualMachine\Mneumonics\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

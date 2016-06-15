@@ -54,10 +54,15 @@ namespace VM.Net.Compiler
             get;
             private set;
         }
-        public byte ByteCode
+        public byte[] ByteCodes
         {
             get;
             private set;
+        }
+
+        public byte ByteCode
+        {
+            get { return ByteCodes[0]; }
         }
 
         protected Mneumonic(string name, byte byteCode)
@@ -68,11 +73,28 @@ namespace VM.Net.Compiler
                 throw new InvalidOperationException("Cannot add Mnuemonic with that name, already exists");
 
             foreach (KeyValuePair<string, Mneumonic> pair in MnuemonicList)
-                if (pair.Value.ByteCode == byteCode)
+                if (pair.Value.ByteCodes.Contains(byteCode))
                     throw new InvalidOperationException("Cannot add Mnuemonic with that byteCode, code already exists");
 
             Name = name;
-            ByteCode = byteCode;
+            ByteCodes = new byte[] { byteCode };
+            MnuemonicList.Add(Name, this);
+        }
+
+        protected Mneumonic(string name, byte[] byteCodes)
+        {
+            name = name.ToUpper();
+
+            if (MnuemonicList.ContainsKey(name))
+                throw new InvalidOperationException("Cannot add Mnuemonic with that name, already exists");
+
+            foreach (KeyValuePair<string, Mneumonic> pair in MnuemonicList)
+                for(int index = 0; index < byteCodes.Length; index ++)
+                    if (pair.Value.ByteCodes.Contains(byteCodes[index]))
+                        throw new InvalidOperationException("Cannot add Mnuemonic with that byteCode, code already exists");
+
+            Name = name;
+            ByteCodes = byteCodes;
             MnuemonicList.Add(Name, this);
         }
 
@@ -80,7 +102,12 @@ namespace VM.Net.Compiler
 
         public override string ToString()
         {
-            return Name + " | " + ByteCode;
+            string result = Name + " | [";
+            for (int index = 0; index < ByteCodes.Length; index++)
+                result += String.Format("{0:X2},", ByteCodes[index]);
+            result = result.Trim(',');
+            result += "]";  
+            return result;
         }
     }
 }

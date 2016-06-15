@@ -10,14 +10,17 @@ using System.Windows.Forms;
 
 namespace VM.Net.VirtualMachine
 {
-    public partial class VirtualScreen : UserControl
+    public partial class VirtualScreen : UserControl, IPeripheral
     {
 
         private ushort myScreenMemoryLocation;
 
-        private byte[] myScreenMemory;
+        private uint[] myScreenMemory;
+        private uint myScreenMode = 0x01;
 
         private Timer myRefreshTimer;
+
+        private Stack<uint> myInputStream;
 
         public ushort ScreenMemoryLocation
         {
@@ -29,19 +32,30 @@ namespace VM.Net.VirtualMachine
             get { return (ushort)myScreenMemory.Length; }
         }
 
-        private delegate void PokeDelegate(ushort address, byte value);
+        private delegate void PokeDelegate(uint address, byte value);
         private delegate void EmptyDelegate();
+        private delegate void PassDelegate(uint value);
 
         private object myThreadLock;
 
-        public VirtualScreen()
+        private int myWidth;
+        private int myHeight;
+
+        public VirtualScreen() : this(128, 72) { }
+
+        public VirtualScreen(int width = 128, int height = 72)
         {
             InitializeComponent();
             DoubleBuffered = true;
 
-            myScreenMemoryLocation = 0x0000;
+            myWidth = width;
+            myHeight = height;
+
+            myInputStream = new Stack<uint>();
+
+            myScreenMemoryLocation = 0x00;
             //myScreenMemory = new byte[4000]; // by default we use an 80x25 screen of 2 bytes
-            myScreenMemory = new byte[128 * 72 * 3];
+            myScreenMemory = new uint[width * height];
 
             myThreadLock = new Object();
 
@@ -86,7 +100,7 @@ namespace VM.Net.VirtualMachine
             }
         }
         
-        public void ThreadSafePoke(ushort address, byte value)
+        public void ThreadSafePoke(uint address, byte value)
         {
             if (InvokeRequired)
             {
@@ -103,7 +117,7 @@ namespace VM.Net.VirtualMachine
         /// </summary>
         /// <param name="address">The address in terms of shared memory</param>
         /// <param name="value">The value to set</param>
-        public void Poke(ushort address, byte value)
+        public void Poke(uint address, byte value)
         {
             ushort memoryLocation;
 
@@ -122,7 +136,7 @@ namespace VM.Net.VirtualMachine
         /// </summary>
         /// <param name="address">The address in terms of shared memory</param>
         /// <returns>The value at the given address</returns>
-        public byte Peek(ushort address)
+        public uint Peek(uint address)
         {
             ushort memoryLocation;
 
@@ -139,19 +153,19 @@ namespace VM.Net.VirtualMachine
         {
             lock (myThreadLock)
             {
-                Bitmap bmp = new Bitmap(128, 72);
+                Bitmap bmp = new Bitmap(myWidth, myHeight);
                 Graphics bmpGraphics = Graphics.FromImage(bmp);
                 Font font = new Font("Courier New", 10.0f, FontStyle.Bold);
 
                 int xPos = 0;
                 int yPos = 0;
 
-                for (int index = 0; index < myScreenMemory.Length; index += 3)
+                for (int index = 0; index < myScreenMemory.Length; index ++)
                 {
-                    xPos = (index / 3) % 128;
-                    yPos = (index / 3) / 128;
+                    xPos = index % myWidth;
+                    yPos = index / myWidth;
 
-                    bmp.SetPixel(xPos, yPos, Color.FromArgb(myScreenMemory[index], myScreenMemory[index + 1], myScreenMemory[index + 2]));
+                    bmp.SetPixel(xPos, yPos, Color.FromArgb((int)myScreenMemory[index]));
                 }
 
                 //for (int index = 0; index < myScreenMemory.Length; index += 2) 
@@ -299,9 +313,73 @@ namespace VM.Net.VirtualMachine
                 //}
 
                 e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                e.Graphics.FillRectangle(Brushes.Black, this.ClientRectangle);
                 e.Graphics.DrawImage(bmp, 0, 0, Width, Height);
                 bmpGraphics.Dispose();
                 bmp.Dispose();
+            }
+        }
+
+        public uint Poll()
+        {
+            return 0x00000000;
+        }
+
+        public void Pass(uint value)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new PassDelegate(Pass), value);
+            }
+            else
+            {
+                byte cmd = (byte)((value & 0xFF000000) >> 24);
+
+                switch (cmd)
+                {
+                    case 0x01:
+                        myScreenMode = 0x01;
+                        break;
+                    case 0x02:
+                        myScreenMode = 0x02;
+                        break;
+                    case 0x03:
+                        myScreenMode = 0x03;
+                        break;
+                    default:
+                        myInputStream.Push(value);
+                        break;
+                }
+
+                switch (myScreenMode)
+                {
+                    case 0x01:
+                        if (myInputStream.Count > 1)
+                        {
+                            uint memLoc = myInputStream.Pop();
+                            uint col = myInputStream.Pop();
+
+                            myScreenMemory[memLoc] = col;
+                        }
+                        break;
+
+                    case 0x02:
+                        if (myInputStream.Count == myScreenMemory.Length)
+                        {
+                            myScreenMemory = myInputStream.ToArray();
+                            myInputStream.Clear();
+                        }
+                        break;
+                    case 0x03:
+                        if (myInputStream.Count == 1)
+                        {
+                            uint color = myInputStream.Pop();
+
+                            for (int index = 0; index < myScreenMemory.Length; index++)
+                                myScreenMemory[index] = color;
+                        }
+                        break;
+                }
             }
         }
     }

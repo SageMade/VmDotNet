@@ -23,15 +23,20 @@ namespace VM.Net
 
         Processor myProcessor;
 
+        VirtualKeyboard myVirtualKeyboard;
+
         delegate void UpdateCacheDelegate(object sender, EventArgs e);
 
         public VirtualMachineHost()
         {
             InitializeComponent();
 
+            myVirtualKeyboard = new VirtualKeyboard(this);
+
             myProcessor = new Processor();
             myProcessor.Cache.OnRegistersUpdated += ThreadedCacheUpdate;
-            myProcessor.Screen = Screen;
+            myProcessor.AttachPeripheral(Screen, 1);
+            myProcessor.AttachPeripheral(myVirtualKeyboard, 2);
             opt5Hz.Checked = true;
         }
 
@@ -39,13 +44,14 @@ namespace VM.Net
         {
             ProcessorCache cache = sender as ProcessorCache;
 
-            string strRegisters = ""; 
-            strRegisters = "Register A = $" + cache.RegisterA.ToString("X").PadLeft(2, '0');
-            strRegisters += "     Register B = $" + cache.RegisterB.ToString("X").PadLeft(2,'0'); 
-            strRegisters += "     Register D = $" + cache.RegisterD.ToString("X").PadLeft(4, '0'); 
-            strRegisters += "\nRegister X = $" + cache.RegisterX.ToString("X").PadLeft(4, '0'); 
-            strRegisters += "   Register Y = $" + cache.RegisterY.ToString("X").PadLeft(4, '0'); 
-            strRegisters += "   Instruction Pointer = $" + myProcessor.InstructionPointer.ToString("X").PadLeft(4, '0');
+            string strRegisters = "";
+            strRegisters += "Stack Size: " + cache.Register_SP;
+            //strRegisters = "Register A = $" + cache.RegisterA.ToString("X").PadLeft(2, '0');
+            //strRegisters += "     Register B = $" + cache.RegisterB.ToString("X").PadLeft(2,'0'); 
+            //strRegisters += "     Register D = $" + cache.RegisterD.ToString("X").PadLeft(4, '0'); 
+            //strRegisters += "\nRegister X = $" + cache.RegisterX.ToString("X").PadLeft(4, '0'); 
+            //strRegisters += "   Register Y = $" + cache.RegisterY.ToString("X").PadLeft(4, '0'); 
+            //strRegisters += "   Instruction Pointer = $" + myProcessor.InstructionPointer.ToString("X").PadLeft(4, '0');
 
             this.lblRegisters.Text = strRegisters; 
         }
@@ -101,6 +107,11 @@ namespace VM.Net
             optPaused.Checked = !optPaused.Checked;
 
             myProcessor.IsPasued = optPaused.Checked;
+        }
+
+        private void optRamDump_Click(object sender, EventArgs e)
+        {
+            myProcessor.Memory.DumpText("ram_dump.txt", 4096, 5120);
         }
     }
 }
