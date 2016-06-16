@@ -253,6 +253,12 @@ namespace VM.Net.VirtualMachine
                 case (byte)RegisterAddress.BP:
                     Register_BP = value;
                     break;
+                case (byte)RegisterAddress.SI:
+                    Register_SI = value;
+                    break;
+                case (byte)RegisterAddress.DI:
+                    Register_DI = value;
+                    break;
 
                 case (byte)RegisterAddress.IAX:
                     Register_IAX = value;
@@ -284,7 +290,11 @@ namespace VM.Net.VirtualMachine
                 case (byte)RegisterAddress.SP:
                     return Register_SP ;                    
                 case (byte)RegisterAddress.BP:
-                    return Register_BP ;                    
+                    return Register_BP;
+                case (byte)RegisterAddress.SI:
+                    return Register_SI;
+                case (byte)RegisterAddress.DI:
+                    return Register_DI;
 
                 case (byte)RegisterAddress.IAX:
                     return Register_IAX ;                    

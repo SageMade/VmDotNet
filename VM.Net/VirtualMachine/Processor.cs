@@ -97,6 +97,49 @@ namespace VM.Net.VirtualMachine
             myProcessorFlags = 0;
         }
 
+        public void LoadProgram(byte[] data, uint memoryAddress)
+        {
+            MemoryStream stream = new MemoryStream(data);
+            BinaryReader reader = new BinaryReader(stream);
+
+            char[] magic;
+            magic = reader.ReadChars(CompilerSettings.MagicLength);
+
+            if (CompilerSettings.VerifyMagicNumbers(magic))
+            {
+                uint counter = 0;
+                uint progLength = 0;
+
+                long startPos = reader.BaseStream.Position;
+
+                myStartAddress = memoryAddress;
+                progLength = reader.ReadUInt32();
+                myExecutionAddress = reader.ReadUInt32();
+
+                while (counter < progLength)
+                {
+                    myMemory[(myStartAddress + counter + 4)] = reader.ReadByte();
+                    counter++;
+                }
+
+                long endPos = reader.BaseStream.Position;
+
+                progLength = (uint)(endPos - startPos);
+
+                myMemory[myStartAddress] = (byte)(progLength >> 8);
+                myMemory[myStartAddress + 1] = (byte)(progLength & 255);
+
+                myMemory[myStartAddress + 2] = (byte)(myExecutionAddress >> 8);
+                myMemory[myStartAddress + 3] = (byte)(myExecutionAddress & 255);
+
+            }
+            else
+                MessageBox.Show("Bad file encountered");
+
+            reader.Close();
+            stream.Close();
+        }
+
         public void LoadProgram(BinaryReader reader, uint memoryAddress)
         {
             char[] magic;
@@ -177,9 +220,12 @@ namespace VM.Net.VirtualMachine
 
         private void NanoSleep()
         {
-            while(myClock.ElapsedTicks < myPrevTicks + myClockTickCount)
+            if (myClockTickCount > 100)
             {
+                while (myClock.ElapsedTicks < myPrevTicks + myClockTickCount)
+                {
 
+                }
             }
 
             myPrevTicks = myClock.ElapsedTicks;
@@ -224,10 +270,8 @@ namespace VM.Net.VirtualMachine
                 byte altByteValue = 0;
                 uint wordValue = 0;
                 uint altWordValue = 0;
-                uint memWord = 0;
                 
                 byte oldCarryFlag;
-                byte addValueByte;
 
                 bool jumped = false;
 
@@ -235,14 +279,13 @@ namespace VM.Net.VirtualMachine
 
                 // Reslove this once for speed
                 uint instructionPointer = myCache.Register_IP;
-                
+
                 switch (instruction)
                 {
                     case 0x02: // LOD ,X #value
                         byteValue = myMemory[instructionPointer + 1];
                         wordValue = myMemory.GetUInt32(instructionPointer + 2);
-                        memWord = myMemory[wordValue];
-                        myCache.SetRegisterSafe(byteValue, memWord);
+                        myCache.SetRegisterSafe(byteValue, wordValue);
 
                         myCache.Register_IP += 1 + 4;
                         break;
@@ -251,9 +294,7 @@ namespace VM.Net.VirtualMachine
                         byteValue = myMemory[instructionPointer + 1];
                         altByteValue = myMemory[instructionPointer + 2];
 
-                        memWord = myMemory[myCache.GetValueWord(altByteValue)];
-
-                        myCache.SetRegisterSafe(byteValue, memWord);
+                        myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(altByteValue));
 
                         myCache.Register_IP += 1 + 4;
                         break;
@@ -293,7 +334,7 @@ namespace VM.Net.VirtualMachine
                     case 0x08: //CMP ,X #y
                         byteValue = myMemory[instructionPointer + 1];
                         wordValue = myMemory.GetUInt32(instructionPointer + 2);
-                        
+
                         myCompareFlag = GetCompareFlags(myCache.GetValueWord(byteValue), wordValue);
 
                         myCache.Register_IP += 1 + 4;
@@ -312,7 +353,7 @@ namespace VM.Net.VirtualMachine
                     case 0x0A: //CMP #val1 #val2
                         wordValue = myMemory.GetUInt32(instructionPointer + 1);
                         altWordValue = myMemory.GetUInt32(instructionPointer + 5);
-                        
+
                         myCompareFlag = GetCompareFlags(wordValue, altWordValue);
 
                         myCache.Register_IP += 4 + 4;
@@ -375,7 +416,7 @@ namespace VM.Net.VirtualMachine
 
                         if ((myCompareFlag & (byte)CompareFlags.LessThan) != 0)
                         {
-                            myCache.Register_IP = wordValue;
+                            myCache.Register_IP = startMemoryAddress + wordValue;
                             jumped = true;
                         }
                         else
@@ -481,8 +522,8 @@ namespace VM.Net.VirtualMachine
 
                         myCache.Register_IP += 1 + 1;
                         break;
-                        
-                    case 0x17:
+
+                    case 0x17: // NOT ,X
                         byteValue = myMemory[instructionPointer + 1];
                         myCache.SetRegisterSafe(byteValue, ~myCache.GetValueWord(byteValue));
                         break;
@@ -490,7 +531,7 @@ namespace VM.Net.VirtualMachine
                     case 0x18: // AND ,X #val
                         byteValue = myMemory[instructionPointer + 1];
                         wordValue = myMemory.GetUInt32(instructionPointer + 2);
-                        
+
                         myCache.SetRegisterSafe(byteValue, (myCache.GetValueWord(byteValue) & wordValue));
                         myCache.Register_IP += 1 + 4;
                         break;
@@ -503,9 +544,169 @@ namespace VM.Net.VirtualMachine
                         myCache.Register_IP += 1 + 1;
                         break;
 
+                    case 0x1A: // OR ,X #val
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
 
-                        // TODO 0x1A - 0x2D
+                        myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) | wordValue);
+                        myCache.Register_IP += 1 + 4;
+                        break;
 
+                    case 0x1B: // OR ,X ,Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+
+                        myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) | myCache.GetValueWord(altByteValue));
+                        myCache.Register_IP += 1 + 1;
+                        break;
+
+                    case 0x1C: // XOR ,X #val
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+
+                        myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) ^ wordValue);
+                        myCache.Register_IP += 1 + 4;
+                        break;
+
+                    case 0x1D: // XOR ,X ,Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+
+                        myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) ^ myCache.GetValueWord(altByteValue));
+                        myCache.Register_IP += 1 + 1;
+                        break;
+
+                    case 0x1E: // ADD ,X #val
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+                        
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) + wordValue); }
+                        myCache.Register_IP += 1 + 4;
+                        break;
+
+                    case 0x1F: // ADD ,X ,Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+                        
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) + myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1;
+                        break;
+
+                    case 0x20: // ADDS ,X #val, Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+                        altByteValue = myMemory[instructionPointer + 6];
+                        
+                        unchecked { myCache.SetRegisterSafe(altByteValue, myCache.GetValueWord(byteValue) + wordValue); }
+                        myCache.Register_IP += 1 + 4 + 1;
+                        break;
+
+                    case 0x21: // ADDS ,X ,Y ,Z
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+                        
+                        unchecked { myCache.SetRegisterSafe(myMemory[instructionPointer + 3], myCache.GetValueWord(byteValue) + myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1 + 1;
+                        break;
+
+                    case 0x22: // SUB ,X #val
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+                        
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) - wordValue); }
+                        myCache.Register_IP += 1 + 4;
+                        break;
+
+                    case 0x23: // SUB ,X ,Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+                        
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) - myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1;
+                        break;
+
+                    case 0x24: // SUBS ,X #val, Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+                        altByteValue = myMemory[instructionPointer + 6];
+                        
+                        unchecked { myCache.SetRegisterSafe(altByteValue, myCache.GetValueWord(byteValue) - wordValue); }
+                        myCache.Register_IP += 1 + 4 + 1;
+                        break;
+
+                    case 0x25: // SUBS ,X ,Y ,Z
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+                        
+                        unchecked { myCache.SetRegisterSafe(myMemory[instructionPointer + 3], myCache.GetValueWord(byteValue) - myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1 + 1;
+                        break;
+
+                    case 0x26: // MUL ,X #val
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) * wordValue); }
+                        myCache.Register_IP += 1 + 4;
+                        break;
+
+                    case 0x27: // MUL ,X ,Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) * myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1;
+                        break;
+
+                    case 0x28: // MULS ,X #val, Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+                        altByteValue = myMemory[instructionPointer + 6];
+
+                        unchecked { myCache.SetRegisterSafe(altByteValue, myCache.GetValueWord(byteValue) * wordValue); }
+                        myCache.Register_IP += 1 + 4 + 1;
+                        break;
+
+                    case 0x29: // MULS ,X ,Y ,Z
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+
+                        unchecked { myCache.SetRegisterSafe(myMemory[instructionPointer + 3], myCache.GetValueWord(byteValue) * myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1 + 1;
+                        break;
+
+                    case 0x2A: // DIV ,X #val
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) / wordValue); }
+                        myCache.Register_IP += 1 + 4;
+                        break;
+
+                    case 0x2B: // DIV ,X ,Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+
+                        unchecked { myCache.SetRegisterSafe(byteValue, myCache.GetValueWord(byteValue) / myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1;
+                        break;
+
+                    case 0x2C: // DIVS ,X #val, Y
+                        byteValue = myMemory[instructionPointer + 1];
+                        wordValue = myMemory.GetUInt32(instructionPointer + 2);
+                        altByteValue = myMemory[instructionPointer + 6];
+
+                        unchecked { myCache.SetRegisterSafe(altByteValue, myCache.GetValueWord(byteValue) / wordValue); }
+                        myCache.Register_IP += 1 + 4 + 1;
+                        break;
+
+                    case 0x2D: // DIVS ,X ,Y ,Z
+                        byteValue = myMemory[instructionPointer + 1];
+                        altByteValue = myMemory[instructionPointer + 2];
+
+                        unchecked { myCache.SetRegisterSafe(myMemory[instructionPointer + 3], myCache.GetValueWord(byteValue) * myCache.GetValueWord(altByteValue)); }
+                        myCache.Register_IP += 1 + 1 + 1;
+                        break;
 
                     case 0x2E: // POLL #device ,X
                         byteValue = myMemory[instructionPointer + 1];
@@ -539,21 +740,21 @@ namespace VM.Net.VirtualMachine
                         myCache.Register_IP += 4 + 1;
                         break;
 
-                    case 0x31: // PASS ,X #device
+                    case 0x31: // PASS #value ,X
+                        wordValue = myMemory.GetUInt32(instructionPointer + 1);
+                        altByteValue = myMemory[instructionPointer + 5];
+
+                        myPeripherals[myCache.GetValueWord(altByteValue) & 0xFF]?.Pass(wordValue);
+                        myCache.Register_IP += 4 + 1;
+                        break;
+
+
+                    case 0x32: // PASS ,X #value
                         byteValue = myMemory[instructionPointer + 1];
                         altByteValue = myMemory[instructionPointer + 2];
 
                         myPeripherals[altByteValue]?.Pass(myCache.GetValueWord(byteValue));
                         myCache.Register_IP += 1 + 1;
-                        break;
-
-
-                    case 0x32: // PASS #value ,X
-                        wordValue = myMemory.GetUInt32( instructionPointer + 1);
-                        byteValue = myMemory[instructionPointer + 5];
-
-                        myPeripherals[(myCache.GetValueWord(byteValue) & 0xFF)]?.Pass(wordValue);
-                        myCache.Register_IP += 4 + 1;
                         break;
 
                     case 0x33: // PASS ,X ,Y
@@ -590,6 +791,9 @@ namespace VM.Net.VirtualMachine
                         wordValue = PopStack();
 
                         myCache.SetRegisterSafe(byteValue, wordValue);
+
+                        if (byteValue == (byte)RegisterAddress.DI)
+                            Debug.Write(wordValue);
 
                         if (byteValue == (byte)RegisterAddress.IP)
                             jumped = true;

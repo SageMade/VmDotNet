@@ -11,6 +11,11 @@ namespace VM.Net.VirtualMachine
     {
         private byte[] myData;
 
+        public uint Size
+        {
+            get { return (uint)myData.Length; }
+        }
+
         public byte this[uint index]
         {
             get { return myData[index]; }
@@ -66,6 +71,11 @@ namespace VM.Net.VirtualMachine
         {
             for (uint index = startLocation; index < startLocation + size; index++)
                 myData[index] = 0;
+        }
+
+        public byte[] GetBytes()
+        {
+            return myData;
         }
     }
 }

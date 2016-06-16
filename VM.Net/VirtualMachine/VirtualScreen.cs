@@ -60,7 +60,7 @@ namespace VM.Net.VirtualMachine
             myThreadLock = new Object();
 
             myRefreshTimer = new Timer();
-            myRefreshTimer.Interval = 1000 / 1;
+            myRefreshTimer.Interval = 1000 / 24;
             myRefreshTimer.Tick += (X, Y) => { OnRefeshTimer(); };
             myRefreshTimer.Start();
 
@@ -102,7 +102,7 @@ namespace VM.Net.VirtualMachine
         
         public void ThreadSafePoke(uint address, byte value)
         {
-            if (InvokeRequired)
+            if (InvokeRequired && !IsDisposed && !Disposing)
             {
                 Invoke(new PokeDelegate(Poke), address, value);
             }
@@ -327,7 +327,7 @@ namespace VM.Net.VirtualMachine
 
         public void Pass(uint value)
         {
-            if (InvokeRequired)
+            if (InvokeRequired && !IsDisposed && !Disposing)
             {
                 Invoke(new PassDelegate(Pass), value);
             }
@@ -346,8 +346,14 @@ namespace VM.Net.VirtualMachine
                     case 0x03:
                         myScreenMode = 0x03;
                         break;
+                    case 0x04:
+                        myInputStream.Clear();
+                        return;
                     default:
-                        myInputStream.Push(value);
+                        lock(myThreadLock)
+                        {
+                            myInputStream.Push(value);
+                        }
                         break;
                 }
 

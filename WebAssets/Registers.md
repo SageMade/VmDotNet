@@ -1,6 +1,6 @@
 # Registers 2.0
 
-### Note that this is still in the planning phase
+### Note that this is still in the planning phase, and is likely to change
 
 This is the current plan for reworking the register system. Unlike the x86 architecture, there will not be any segment registers. All major registers will be 32 bits wide, 
 which lets us access a lot more ram. There will be 6 integer registers, as well as 3 floating point registers and 2 processor-restricted registers. The remaining registers will be for program keeping. 

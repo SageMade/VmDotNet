@@ -31,6 +31,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optCompile = new System.Windows.Forms.ToolStripMenuItem();
+            this.optCompileAndLoad = new System.Windows.Forms.ToolStripMenuItem();
+            this.optExcecute = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuSettings = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuClockSpeed = new System.Windows.Forms.ToolStripMenuItem();
             this.opt5Hz = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,12 +47,15 @@
             this.opt100MHz = new System.Windows.Forms.ToolStripMenuItem();
             this.opt1GHz = new System.Windows.Forms.ToolStripMenuItem();
             this.optPaused = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuTools = new System.Windows.Forms.ToolStripMenuItem();
+            this.optRamDump = new System.Windows.Forms.ToolStripMenuItem();
+            this.optMemoryView = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlRegisters = new System.Windows.Forms.Panel();
             this.lblRegisters = new System.Windows.Forms.Label();
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
+            this.dlgOpenVmFile = new System.Windows.Forms.OpenFileDialog();
             this.myVirtualScreen = new VM.Net.VirtualMachine.VirtualScreen();
-            this.mnuTools = new System.Windows.Forms.ToolStripMenuItem();
-            this.optRamDump = new System.Windows.Forms.ToolStripMenuItem();
+            this.optRegisterView = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.pnlRegisters.SuspendLayout();
             this.SuspendLayout();
@@ -69,7 +75,10 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem});
+            this.openToolStripMenuItem,
+            this.optCompile,
+            this.optCompileAndLoad,
+            this.optExcecute});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
@@ -77,9 +86,30 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // optCompile
+            // 
+            this.optCompile.Name = "optCompile";
+            this.optCompile.Size = new System.Drawing.Size(161, 22);
+            this.optCompile.Text = "&Compile";
+            this.optCompile.Click += new System.EventHandler(this.optCompile_Click);
+            // 
+            // optCompileAndLoad
+            // 
+            this.optCompileAndLoad.Name = "optCompileAndLoad";
+            this.optCompileAndLoad.Size = new System.Drawing.Size(161, 22);
+            this.optCompileAndLoad.Text = "Compile && Load";
+            this.optCompileAndLoad.Click += new System.EventHandler(this.optCompileAndLoad_Click);
+            // 
+            // optExcecute
+            // 
+            this.optExcecute.Name = "optExcecute";
+            this.optExcecute.Size = new System.Drawing.Size(161, 22);
+            this.optExcecute.Text = "&Excecute";
+            this.optExcecute.Click += new System.EventHandler(this.optExcecute_Click);
             // 
             // mnuSettings
             // 
@@ -194,6 +224,30 @@
             this.optPaused.Text = "&Pause";
             this.optPaused.Click += new System.EventHandler(this.optPauseClicked);
             // 
+            // mnuTools
+            // 
+            this.mnuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.optRamDump,
+            this.optMemoryView,
+            this.optRegisterView});
+            this.mnuTools.Name = "mnuTools";
+            this.mnuTools.Size = new System.Drawing.Size(47, 20);
+            this.mnuTools.Text = "&Tools";
+            // 
+            // optRamDump
+            // 
+            this.optRamDump.Name = "optRamDump";
+            this.optRamDump.Size = new System.Drawing.Size(152, 22);
+            this.optRamDump.Text = "&RAM Dump";
+            this.optRamDump.Click += new System.EventHandler(this.optRamDump_Click);
+            // 
+            // optMemoryView
+            // 
+            this.optMemoryView.Name = "optMemoryView";
+            this.optMemoryView.Size = new System.Drawing.Size(152, 22);
+            this.optMemoryView.Text = "Memory View";
+            this.optMemoryView.Click += new System.EventHandler(this.optMemoryView_Click);
+            // 
             // pnlRegisters
             // 
             this.pnlRegisters.Controls.Add(this.lblRegisters);
@@ -219,6 +273,11 @@
             this.dlgOpenFile.DefaultExt = "vbc";
             this.dlgOpenFile.Filter = "Virtual Byte Code | *.vbc";
             // 
+            // dlgOpenVmFile
+            // 
+            this.dlgOpenVmFile.DefaultExt = "vm";
+            this.dlgOpenVmFile.Filter = "Virtual Machine Code | *.vm";
+            // 
             // myVirtualScreen
             // 
             this.myVirtualScreen.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -228,20 +287,12 @@
             this.myVirtualScreen.Size = new System.Drawing.Size(641, 331);
             this.myVirtualScreen.TabIndex = 0;
             // 
-            // mnuTools
+            // optRegisterView
             // 
-            this.mnuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optRamDump});
-            this.mnuTools.Name = "mnuTools";
-            this.mnuTools.Size = new System.Drawing.Size(47, 20);
-            this.mnuTools.Text = "&Tools";
-            // 
-            // optRamDump
-            // 
-            this.optRamDump.Name = "optRamDump";
-            this.optRamDump.Size = new System.Drawing.Size(152, 22);
-            this.optRamDump.Text = "&RAM Dump";
-            this.optRamDump.Click += new System.EventHandler(this.optRamDump_Click);
+            this.optRegisterView.Name = "optRegisterView";
+            this.optRegisterView.Size = new System.Drawing.Size(152, 22);
+            this.optRegisterView.Text = "Re&gister View";
+            this.optRegisterView.Click += new System.EventHandler(this.optRegisterView_Click);
             // 
             // VirtualMachineHost
             // 
@@ -286,5 +337,11 @@
         private System.Windows.Forms.ToolStripMenuItem optPaused;
         private System.Windows.Forms.ToolStripMenuItem mnuTools;
         private System.Windows.Forms.ToolStripMenuItem optRamDump;
+        private System.Windows.Forms.ToolStripMenuItem optCompile;
+        private System.Windows.Forms.OpenFileDialog dlgOpenVmFile;
+        private System.Windows.Forms.ToolStripMenuItem optCompileAndLoad;
+        private System.Windows.Forms.ToolStripMenuItem optExcecute;
+        private System.Windows.Forms.ToolStripMenuItem optMemoryView;
+        private System.Windows.Forms.ToolStripMenuItem optRegisterView;
     }
 }

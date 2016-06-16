@@ -1,14 +1,18 @@
 ﻿START:
  JMP @MAIN_PROG 
  STM #10 #0xA000
-CLEAR_KB: ; Clear KB input
+ 
+; Clear KB input
+CLEAR_KB: 
  PUSH ,BP 
  MOV ,BP ,SP 
  PASS #0x00000001 #0x02
  MOV ,SP ,BP
  POP ,BP
  POP ,IP
-CLEAR_SCR: ; Screen Clear Command 
+ 
+; Screen Clear Command 
+CLEAR_SCR: 
  PUSH ,BP 
  MOV ,BP ,SP 
  PASS #0x03000000 #0x01
@@ -17,11 +21,47 @@ CLEAR_SCR: ; Screen Clear Command
  MOV ,SP ,BP
  POP ,BP
  POP ,IP
+ 
+; Draw a vertical line
+DRAW_LINE_V:
+ POP ,IAX
+ POP ,DI
+ PUSH ,IAX
+ PUSH ,BP 
+ MOV ,BP ,SP
+ LOD ,ICX #0x00
+ LOD ,IEX #0xFFFFFFFF
+DRAW_LINE_V_START:
+ ADDS ,DI ,ICX ,IDX 
+ PASS ,IEX #0x01  
+ PASS ,IDX #0x01 
+ INC ,ICX  
+ CMP ,ICX #128
+ JLT @DRAW_LINE_V_START
+ MOV ,SP ,BP
+ POP ,BP
+ POP ,IP
+ 
+; Main program
 MAIN_PROG:
+ PUSH ,IEX
+ PUSH ,IDX
+ PUSH #128
  PUSH _ret_addr_
  JMP @CLEAR_KB
+ POP ,IDX
+ POP ,IEX
+ 
  PUSH _ret_addr_
  JMP @CLEAR_SCR
+ 
+ PUSH ,IEX
+ PUSH ,IDX
+ PUSH _ret_addr_
+ JMP @DRAW_LINE_V
+ POP ,IDX
+ POP ,IEX
+
  ; Passing colors
  PASS #0x01000000 #0x01
  PASS #0xFFFF0000 #0x01
@@ -32,7 +72,7 @@ Poll_Keyboard:
  POLL #0x02 ,IDX
  AND ,IDX #0x01FFFFFF
  CMP ,IDX #0x00 
- JEQ @Poll_Keyboard 
+ ; JEQ @Poll_Keyboard 
  PASS #0xFFFF0000 #0x01 
  PASS #20         #0x01 
  STM #10 #0xA000 

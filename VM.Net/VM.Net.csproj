@@ -82,8 +82,26 @@
     <Compile Include="Compiler\Mneumonic.cs" />
     <Compile Include="Compiler\SourceCrawler.cs" />
     <Compile Include="Common\RegisterAddress.cs" />
+    <Compile Include="MemoryDiag.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MemoryDiag.Designer.cs">
+      <DependentUpon>MemoryDiag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NumericInputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NumericInputForm.Designer.cs">
+      <DependentUpon>NumericInputForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegisterView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RegisterView.Designer.cs">
+      <DependentUpon>RegisterView.cs</DependentUpon>
+    </Compile>
     <Compile Include="VirtualMachine\Enums.cs" />
     <Compile Include="VirtualMachine\IPeripheral.cs" />
     <Compile Include="VirtualMachine\Memory.cs" />
@@ -113,6 +131,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MemoryDiag.resx">
+      <DependentUpon>MemoryDiag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NumericInputForm.resx">
+      <DependentUpon>NumericInputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RegisterView.resx">
+      <DependentUpon>RegisterView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="VirtualMachine\VirtualScreen.resx">
       <DependentUpon>VirtualScreen.cs</DependentUpon>
     </EmbeddedResource>

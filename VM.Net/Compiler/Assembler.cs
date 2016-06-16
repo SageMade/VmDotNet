@@ -24,6 +24,42 @@ namespace VM.Net.Compiler
             isEnd = false;
         }
 
+        public void Compile(string path)
+        {
+            path = Directory.GetParent(path).FullName + "\\" + Path.GetFileNameWithoutExtension(path);
+
+            BinaryWriter resultWriter;
+            TextReader reader = File.OpenText(path + ".vm");
+
+            File.Delete(path + ".vbc");
+            FileStream outStream = File.OpenWrite(path + ".vbc");
+            resultWriter = new BinaryWriter(outStream);
+            string source = reader.ReadToEnd();
+
+            Assemble(source, resultWriter);
+
+            resultWriter.Close();
+            outStream.Close();
+
+            resultWriter.Dispose();
+            outStream.Dispose();
+        }
+
+        public byte[] CompileRaw(string path)
+        {
+            path = Directory.GetParent(path).FullName + "\\" + Path.GetFileNameWithoutExtension(path);
+            
+            TextReader reader = File.OpenText(path + ".vm");
+
+            MemoryStream stream = new MemoryStream();
+            BinaryWriter results = new BinaryWriter(stream);
+
+            Assemble(reader.ReadToEnd(), results);
+
+            results.Close();
+            return stream.GetBuffer();
+        }
+
         public void Assemble(string program, BinaryWriter output)
         {
             myLabelLookup = new Hashtable();

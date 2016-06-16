@@ -68,6 +68,7 @@ namespace VM.Net.Compiler.Mnemonics2
                     sourceCrawler.CurrentNdx++;
                     // Read register
                     RegisterAddress sourceRegister = sourceCrawler.ReadRegister();
+                    sourceCrawler.EatWhitespace();
 
                     // Make sure we have a target register
                     if (sourceCrawler.Peek() == CompilerSettings.RegisterDelimiter)
@@ -88,6 +89,8 @@ namespace VM.Net.Compiler.Mnemonics2
                         }
                     }
                 }
+                else
+                    throw new InvalidDataException("Bad bytecode at line {0}, arguments should be ADDS ,X ,Y ,Z or ADDS ,X #val ,Y");
             }
         }
     }
