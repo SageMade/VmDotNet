@@ -3,11 +3,15 @@ A Virtual Machine and compiler written in C# based on the B32 virtual machine (s
 
 ## TODO:
 * Commenting pass
+* Re-write main processor, break into ALU and control unit
+* Re-write memory access and registers
+* Build caching system for high-speed caches
 * Emulate multiple devices an interfaces (chipset)
 * Better threading
 * Better timing control
 * State saving
 * Possibly upgrade to 32 bit
+* Improve interpretation speed
 
 ## Licensing:
 I really don't care if people use my code, it's not great. But I would like to keep in mind the fact that a lot of the core idea 
